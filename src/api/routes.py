@@ -6,6 +6,10 @@ from api.models import db, User
 from api.utils import generate_sitemap, APIException
 import hashlib
 
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+
 api = Blueprint('api', __name__)
 
 
@@ -22,7 +26,7 @@ def handle_hello():
 def create_account():
     body = request.get_json(force = True)
     email = body['email']
-    password = str(hashlib.sha256(body['password'].encode()))
+    password = hashlib.sha256(body['password'].encode("utf-8")).hexdigest()
     has_email = User.query.filter_by(email = email).first()
     if has_email is None:
         new_user = User(email = email, password = password, is_active = True)
@@ -30,4 +34,23 @@ def create_account():
         db.session.commit()
         return jsonify('Successfully created account!')
     else:
-        return 'User already exists :('
+        return jsonify('User already exists :(')
+
+@api.route('/Login', methods=['POST'])
+def Login():
+    body = request.get_json(force = True)
+    email = body['email']
+    password = hashlib.sha256(body['password'].encode("utf-8")).hexdigest()
+    print(password)
+    has_user = User.query.filter_by(email = email, password = password).first()
+    if has_user is not None:
+        access_token = create_access_token(identity=email)
+        return jsonify(access_token = access_token)
+    else:
+        return jsonify("Wrong email or password")
+
+@api.route('/privatedashboard', methods=['GET'])
+@jwt_required()
+def getdashboard():
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as = current_user)

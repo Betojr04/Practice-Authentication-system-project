@@ -4,12 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 const Signup = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [error, setError] = useState("");
   const Navigate = useNavigate();
   console.log(email, password);
   const createAccount = (e) => {
     e.preventDefault();
     fetch(
-      "https://3001-4geeksacade-reactflaskh-ss4es7k7s8o.ws-us84.gitpod.io/api/createaccount",
+      "https://3001-betojr04-practiceauthen-au7r01f53cj.ws-us85.gitpod.io/api/createaccount",
       {
         method: "POST",
         body: JSON.stringify({
@@ -23,8 +24,12 @@ const Signup = () => {
         return Response.json();
       })
       .then((result) => {
-        console.log(result);
-        Navigate("/Login");
+        if (result.includes("User already exists :(")) {
+          setError("Username Taken");
+        } else {
+          console.log(result);
+          Navigate("/Login");
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -45,7 +50,7 @@ const Signup = () => {
           aria-describedby="emailHelp"
         />
         <div id="emailHelp" className="form-text">
-          We'll never share your email with anyone else.
+          {error}
         </div>
       </div>
       <div className="mb-3">
