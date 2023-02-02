@@ -9,7 +9,7 @@ export default function Login() {
   const handlelogin = (e) => {
     e.preventDefault();
     fetch(
-      "https://3001-betojr04-practiceauthen-au7r01f53cj.ws-us84.gitpod.io/api/Login",
+      "https://3001-betojr04-practiceauthen-au7r01f53cj.ws-us85.gitpod.io/api/Login",
       {
         method: "POST",
         body: JSON.stringify({
@@ -31,7 +31,7 @@ export default function Login() {
         } else {
           console.log(result);
           localStorage.setItem("jwt", result.access_token);
-          Navigate("/Login");
+          Navigate("/privateDashboard");
         }
       })
       .catch((error) => {
